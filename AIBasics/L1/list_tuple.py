@@ -4,7 +4,7 @@
 import numpy as np
 
 
-x = [4, 'haha', True, 1.3, np.sin, [1, 2, 3]]
+x = [4, "haha", True, 1.3, np.sin, [1, 2, 3]]
 print(x)
 print(type(x))  # 打印类型
 print(len(x))  # 打印长度（包含几个元素）
@@ -47,7 +47,3 @@ print(np.sin(x))
     x[0] = 5
   上述代码报错：TypeError: 'tuple' object does not support item assignment
 """
-
-
-
-

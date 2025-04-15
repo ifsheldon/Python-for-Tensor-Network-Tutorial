@@ -5,12 +5,11 @@ x = '22sffr3d44fcd32'
 （提示：利用ord()函数）
 """
 
-x = '22sffr3d44fcd32'
+x = "22sffr3d44fcd32"
 
-print(ord('0'), ord('9'))
+print(ord("0"), ord("9"))
 y = list()
 for k in x:
-    if (ord(k) >= ord('0')) and (ord(k) <= ord('9')):
+    if (ord(k) >= ord("0")) and (ord(k) <= ord("9")):
         y.append(k)
 print(y)
-

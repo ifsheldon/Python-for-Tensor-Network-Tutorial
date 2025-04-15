@@ -18,8 +18,8 @@ def act_N_qubit_QFT(psi, pos=None):
         pos = list(range(num_q))
     for n in range(len(pos)):
         psi.act_single_gate(mf.hadamard(), [pos[n]])
-        for n1 in range(n+1, len(pos)):
-            psi.act_single_gate(mf.phase_shift(2*math.pi/(2**(n1+1))), [pos[n]], [pos[n1]])
+        for n1 in range(n + 1, len(pos)):
+            psi.act_single_gate(mf.phase_shift(2 * math.pi / (2 ** (n1 + 1))), [pos[n]], [pos[n1]])
     if flagTPS:
         return psi
     else:
@@ -76,6 +76,3 @@ def vecs2product_state(vecs):
             psi1.append(psi.reshape([1] + ([vecs.shape[1]] * vecs.shape[2])))
         # retuen：样本数 * [直积态维数])
         return tc.cat(psi1, dim=0)
-
-
-

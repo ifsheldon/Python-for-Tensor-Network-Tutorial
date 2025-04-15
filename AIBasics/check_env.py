@@ -14,11 +14,11 @@ def check_packages(packages):
 
 
 def install_package(package):
-    if package in ['torch', 'pytorch']:
+    if package in ["torch", "pytorch"]:
         print(f"{package} 需按照官网说明手动安装。")
     else:
         try:
-            subprocess.run(['conda', 'install', package], check=True)
+            subprocess.run(["conda", "install", package], check=True)
             print(f"Package {package} installed successfully.")
         except subprocess.CalledProcessError:
             try:
@@ -30,7 +30,7 @@ def install_package(package):
 
 def main():
     # 需要检查的包列表
-    packages = ['numpy', 'pandas', 'matplotlib', 'torch', 'scipy']
+    packages = ["numpy", "pandas", "matplotlib", "torch", "scipy"]
     check_packages(packages)
     print(datetime.datetime.now())
 

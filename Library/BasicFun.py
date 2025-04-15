@@ -9,12 +9,12 @@ from matplotlib import pyplot as plt
 
 def binary_strings(num):
     s = list()
-    length = len(str(bin(num-1))[2:])
+    length = len(str(bin(num - 1))[2:])
     for n in range(num):
         b = str(bin(n))[2:]
         l0 = len(b)
         if length > l0:
-            b = ''.join([('0' * (length-l0)), b])
+            b = "".join([("0" * (length - l0)), b])
         s.append(b)
     return s
 
@@ -22,6 +22,7 @@ def binary_strings(num):
 def combine_dicts(dic_def, dic_new, deep_copy=False):
     # dic_def中的重复key值将被dic_new覆盖
     import copy
+
     if dic_new is None:
         return dic_def
     if deep_copy:
@@ -30,24 +31,24 @@ def combine_dicts(dic_def, dic_new, deep_copy=False):
         return dict(dic_def, **dic_new)
 
 
-def compare_dicts(dict1, dict2, name1='dict1', name2='dict2'):
+def compare_dicts(dict1, dict2, name1="dict1", name2="dict2"):
     same = True
     for x in dict1:
         if x not in dict2:
-            print(str(x) + ': in ' + name1 + ' but not in ' + name2)
+            print(str(x) + ": in " + name1 + " but not in " + name2)
             same = False
         elif dict1[x] != dict2[x]:
-            print(str(x) + ': value in ' + name1 + ' different from ' + name2)
+            print(str(x) + ": value in " + name1 + " different from " + name2)
             same = False
     for x in dict2:
         if x not in dict1:
-            print(str(x) + ': in ' + name2 + ' but not in ' + name1)
+            print(str(x) + ": in " + name2 + " but not in " + name1)
             same = False
     return same
 
 
 def convert_nums_to_abc(nums, n0=0):
-    s = ''
+    s = ""
     n0 = n0 + 97
     for m in nums:
         s += chr(m + n0)
@@ -55,16 +56,16 @@ def convert_nums_to_abc(nums, n0=0):
 
 
 def choose_device(n=0):
-    if n == 'cpu':
-        return 'cpu'
+    if n == "cpu":
+        return "cpu"
     else:
         if tc.cuda.is_available():
             if n is None:
                 return tc.device("cuda:0")
             elif type(n) is int:
-                return tc.device("cuda:"+str(n))
+                return tc.device("cuda:" + str(n))
             else:
-                return tc.device("cuda"+str(n)[4:])
+                return tc.device("cuda" + str(n)[4:])
         else:
             return tc.device("cpu")
 
@@ -83,20 +84,20 @@ def fprint(content, file=None, print_screen=True, append=True):
             print(content)
     else:
         if append:
-            way = 'ab'
+            way = "ab"
         else:
-            way = 'wb'
+            way = "wb"
         with open(file, way, buffering=0) as log:
-            log.write((content + '\n').encode(encoding='utf-8'))
+            log.write((content + "\n").encode(encoding="utf-8"))
         if print_screen:
             print(content)
 
 
 def indexes_eq2einsum_eq(indexes):
     eq = convert_nums_to_abc(indexes[0])
-    for n in range(1, len(indexes)-1):
-        eq += (',' + convert_nums_to_abc(indexes[n]))
-    eq += ('->' + convert_nums_to_abc(indexes[-1]))
+    for n in range(1, len(indexes) - 1):
+        eq += "," + convert_nums_to_abc(indexes[n])
+    eq += "->" + convert_nums_to_abc(indexes[-1])
     return eq
 
 
@@ -106,7 +107,7 @@ def join_path(path1, path2):
     elif path2 is None:
         path_file = path1
     elif (path1 is None) and (path2 is None):
-        path_file = './'
+        path_file = "./"
     else:
         path_file = os.path.join(path1, path2)
     return path_file
@@ -118,16 +119,16 @@ def list_eq2einsum_eq(eq):
     # 例如[[0, 1], [0, 2], [1, 2]] 转为 'ab,ac->bc'
     # 例如[[0, 1], [0, 1], []] 转为 'ab,ab->'
     length = len(eq)
-    eq_str = ''
-    for n in range(length-1):
-        tmp = [chr(m+97) for m in eq[n]]
-        eq_str = eq_str + ''.join(tmp) + ','
-    eq_str = eq_str[:-1] + '->'
-    tmp = [chr(m+97) for m in eq[-1]]
-    return eq_str + ''.join(tmp)
+    eq_str = ""
+    for n in range(length - 1):
+        tmp = [chr(m + 97) for m in eq[n]]
+        eq_str = eq_str + "".join(tmp) + ","
+    eq_str = eq_str[:-1] + "->"
+    tmp = [chr(m + 97) for m in eq[-1]]
+    return eq_str + "".join(tmp)
 
 
-def load(path_file, names=None, device='cpu', return_tuple=True):
+def load(path_file, names=None, device="cpu", return_tuple=True):
     if os.path.isfile(path_file):
         if names is None:
             data = tc.load(path_file, map_location=device)
@@ -163,9 +164,18 @@ def mkdir(path):
         os.makedirs(path)
 
 
-def plot(x, *y, marker='s', linestyle='-',
-         markersize=None, markerfacecolor=None, markeredgewidth=None,
-         xlabel=None, ylabel=None, legend=None):
+def plot(
+    x,
+    *y,
+    marker="s",
+    linestyle="-",
+    markersize=None,
+    markerfacecolor=None,
+    markeredgewidth=None,
+    xlabel=None,
+    ylabel=None,
+    legend=None,
+):
     if type(x) is tc.Tensor:
         x = x.cpu().numpy()
     fig = plt.figure()
@@ -179,16 +189,25 @@ def plot(x, *y, marker='s', linestyle='-',
         for n, y0 in enumerate(y):
             if type(y0) is tc.Tensor:
                 y0 = y0.cpu().numpy()
-            fig, = ax.plot(x, y0, marker=marker[n], markersize=markersize,
-                           markeredgewidth=markeredgewidth,
-                           linestyle=linestyle[n])
+            (fig,) = ax.plot(
+                x,
+                y0,
+                marker=marker[n],
+                markersize=markersize,
+                markeredgewidth=markeredgewidth,
+                linestyle=linestyle[n],
+            )
             fig.set_markerfacecolor(markerfacecolor)
             figs.append(fig)
     else:
-        figs, = ax.plot(np.arange(len(x)), x,
-                        marker=marker, markersize=markersize,
-                        markeredgewidth=markeredgewidth,
-                        linestyle=linestyle)
+        (figs,) = ax.plot(
+            np.arange(len(x)),
+            x,
+            marker=marker,
+            markersize=markersize,
+            markeredgewidth=markeredgewidth,
+            linestyle=linestyle,
+        )
         figs.set_markerfacecolor(markerfacecolor)
         figs = [figs]
     if legend is not None:
@@ -200,7 +219,9 @@ def plot(x, *y, marker='s', linestyle='-',
     plt.show()
 
 
-def print_dict(a, keys=None, welcome='', style_sep=': ', end='\n', file=None, print_screen=True, append=True):
+def print_dict(
+    a, keys=None, welcome="", style_sep=": ", end="\n", file=None, print_screen=True, append=True
+):
     express = welcome
     if keys is None:
         for n in a:
@@ -225,19 +246,19 @@ def plot_multi_imgs(imgs, num_rows=1):
     fig = plt.figure()
     num_col = math.ceil(num / num_rows)
     for n in range(num):
-        ax = fig.add_subplot(num_rows, num_col, n+1)
+        ax = fig.add_subplot(num_rows, num_col, n + 1)
         ax.imshow(imgs[n])
     plt.show()
 
 
-def print_progress_bar(n_current, n_total, message=''):
+def print_progress_bar(n_current, n_total, message=""):
     if n_current == (n_total - 1):
-        message += '\t' + chr(9646) * 10 + 'done! \n'
+        message += "\t" + chr(9646) * 10 + "done! \n"
     else:
         x1 = math.floor(n_current / n_total * 10)
         x2 = math.floor(n_current / n_total * 100) % 10
-        message += '\t' + chr(9646) * x1 + str(x2) + chr(9647) * (9 - x1)
-    print('\r' + message, end='')
+        message += "\t" + chr(9646) * x1 + str(x2) + chr(9647) * (9 - x1)
+    print("\r" + message, end="")
     time.sleep(0.01)
 
 
@@ -279,6 +300,7 @@ def save(path, file, data, names, append=False):
 
 def search_file(path, exp):
     import re
+
     content = os.listdir(path)
     exp = re.compile(exp)
     result = list()
@@ -288,10 +310,11 @@ def search_file(path, exp):
     return result
 
 
-def show_multiple_images(imgs, lxy=None, titles=None, save_name=None,
-                         show=True, cmap='coolwarm', img_size=None):
+def show_multiple_images(
+    imgs, lxy=None, titles=None, save_name=None, show=True, cmap="coolwarm", img_size=None
+):
     plt.figure()
-    plt.rcParams['font.sans-serif'] = ['Songti SC']
+    plt.rcParams["font.sans-serif"] = ["Songti SC"]
 
     if cmap is None:
         cmap = plt.cm.gray
@@ -304,13 +327,13 @@ def show_multiple_images(imgs, lxy=None, titles=None, save_name=None,
     ni = len(imgs)
     if lxy is None:
         lx = int(np.sqrt(ni))
-        ly = int((ni+1) / lx)
+        ly = int((ni + 1) / lx)
     else:
         lx, ly = tuple(lxy)
     if lx == -1:
-        lx = int((ni+1) / ly)
+        lx = int((ni + 1) / ly)
     elif ly == -1:
-        ly = int((ni+1) / lx)
+        ly = int((ni + 1) / lx)
 
     for n in range(ni):
         plt.subplot(lx, ly, n + 1)
@@ -326,7 +349,7 @@ def show_multiple_images(imgs, lxy=None, titles=None, save_name=None,
             plt.imshow(tmp)
         if titles is not None:
             plt.title(str(titles[n]))
-        plt.axis('off')
+        plt.axis("off")
         plt.xticks([])
         plt.yticks([])
     # plt.colorbar()
@@ -352,6 +375,7 @@ def supplementary(set1, set2):
 # From ZZS
 def compare_iterables(a_list, b_list):
     from collections.abc import Iterable
+
     if isinstance(a_list, Iterable) and isinstance(b_list, Iterable):
         xx = [x for x in a_list if x in b_list]
         if len(xx) > 0:

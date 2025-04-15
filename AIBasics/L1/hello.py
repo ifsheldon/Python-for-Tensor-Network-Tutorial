@@ -1,9 +1,9 @@
-print('Hello!')  # 基本函数print
+print("Hello!")  # 基本函数print
 
-x = 'Hi!'  # x为一个变量
+x = "Hi!"  # x为一个变量
 print(x)
 print("Hi!")
-print(type('Hi!'))
+print(type("Hi!"))
 print(type(x))  # 类型为字符串str（查看打印结果）
 
 y = 1

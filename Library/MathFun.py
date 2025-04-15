@@ -6,7 +6,7 @@ import numpy as np
 
 
 def entanglement_entropy(lm, eps=1e-15):
-    lm1 = lm ** 2 + eps
+    lm1 = lm**2 + eps
     if type(lm1) is tc.Tensor:
         return tc.dot(-1 * lm1, tc.log(lm1))
     else:
@@ -25,7 +25,7 @@ def hosvd(x, dc=None, return_lms=False):
         mat = reduced_matrix(x, n)
         lm_, u_ = tc.linalg.eigh(mat)
         if (dc is not None) and (dc[n] < x.shape[n]):
-            u_ = u_[:, -dc[n]:]
+            u_ = u_[:, -dc[n] :]
         u.append(u_)
         lms.append(lm_)
     core = tucker_product(x, u, conj=True, dim=0)
@@ -51,37 +51,37 @@ def kron(mats):
 def metric_euclidean(samples, samples_ref, p=2):
     samples = samples.reshape(samples.shape[0], -1)
     samples_ref = samples_ref.reshape(samples_ref.shape[0], -1)
-    metric = tc.ones((samples.shape[0], samples_ref.shape[0]),
-                     device=samples.device, dtype=samples.dtype)
+    metric = tc.ones(
+        (samples.shape[0], samples_ref.shape[0]), device=samples.device, dtype=samples.dtype
+    )
     for n in range(samples.shape[0]):
-        tmp = samples[n, :].repeat(
-            samples_ref.shape[0], 1) - samples_ref
+        tmp = samples[n, :].repeat(samples_ref.shape[0], 1) - samples_ref
         metric[n, :] = tmp.norm(p=p, dim=1)
     return metric.sum(dim=1) / samples_ref.shape[0]
 
 
-def metric_matrix_neg_log_cos_sin(samples, theta=np.pi/2-1e-10):
+def metric_matrix_neg_log_cos_sin(samples, theta=np.pi / 2 - 1e-10):
     samples = samples.reshape(samples.shape[0], -1)
-    metric = tc.ones((samples.shape[0], samples.shape[0]),
-                     device=samples.device, dtype=samples.dtype)
-    for n in range(samples.shape[0]-1):
-        tmp = samples[n, :].repeat(
-            samples.shape[0]-n-1, 1) - samples[n+1:, :]
+    metric = tc.ones(
+        (samples.shape[0], samples.shape[0]), device=samples.device, dtype=samples.dtype
+    )
+    for n in range(samples.shape[0] - 1):
+        tmp = samples[n, :].repeat(samples.shape[0] - n - 1, 1) - samples[n + 1 :, :]
         tmp = tc.cos(tmp * theta)
         tmp = (-1) * tc.log(tmp).sum(dim=1) / tmp.shape[1]
-        metric[n, n+1:] = tmp
-        metric[n+1:, n] = tmp
+        metric[n, n + 1 :] = tmp
+        metric[n + 1 :, n] = tmp
     return metric
 
 
-def metric_neg_log_cos_sin(samples, samples_ref, theta=np.pi/2-1e-10, average=True):
+def metric_neg_log_cos_sin(samples, samples_ref, theta=np.pi / 2 - 1e-10, average=True):
     samples = samples.reshape(samples.shape[0], -1)
     samples_ref = samples_ref.reshape(samples_ref.shape[0], -1)
-    metric = tc.zeros((samples.shape[0], samples_ref.shape[0]),
-                      device=samples.device, dtype=samples.dtype)
+    metric = tc.zeros(
+        (samples.shape[0], samples_ref.shape[0]), device=samples.device, dtype=samples.dtype
+    )
     for n in range(samples.shape[0]):
-        tmp = samples[n, :].repeat(
-            samples_ref.shape[0], 1) - samples_ref
+        tmp = samples[n, :].repeat(samples_ref.shape[0], 1) - samples_ref
         tmp = tc.cos(tmp * theta)
         metric[n, :] = (-1) * tc.log(tmp).sum(dim=1) / tmp.shape[1]
     if average:
@@ -92,53 +92,53 @@ def metric_neg_log_cos_sin(samples, samples_ref, theta=np.pi/2-1e-10, average=Tr
 def metric_neg_chebyshev(samples, samples_ref):
     samples = samples.reshape(samples.shape[0], -1)
     samples_ref = samples_ref.reshape(samples_ref.shape[0], -1)
-    metric = tc.ones((samples.shape[0], samples_ref.shape[0]),
-                     device=samples.device, dtype=samples.dtype)
+    metric = tc.ones(
+        (samples.shape[0], samples_ref.shape[0]), device=samples.device, dtype=samples.dtype
+    )
     for n in range(samples.shape[0]):
-        tmp = samples[n, :].repeat(
-            samples_ref.shape[0], 1) - samples_ref
+        tmp = samples[n, :].repeat(samples_ref.shape[0], 1) - samples_ref
         metric[n, :] = tmp.norm(dim=1)
     return metric.min(dim=1)[0]
 
 
-def metric_neg_cossin_chebyshev(samples, samples_ref, theta=np.pi/2-1e-14):
+def metric_neg_cossin_chebyshev(samples, samples_ref, theta=np.pi / 2 - 1e-14):
     samples = samples.reshape(samples.shape[0], -1)
     samples_ref = samples_ref.reshape(samples_ref.shape[0], -1)
-    metric = tc.zeros((samples.shape[0], samples_ref.shape[0]),
-                      device=samples.device, dtype=samples.dtype)
+    metric = tc.zeros(
+        (samples.shape[0], samples_ref.shape[0]), device=samples.device, dtype=samples.dtype
+    )
     for n in range(samples.shape[0]):
-        tmp = samples[n, :].repeat(
-            samples_ref.shape[0], 1) - samples_ref
+        tmp = samples[n, :].repeat(samples_ref.shape[0], 1) - samples_ref
         tmp = tc.cos(tmp * theta)
         metric[n, :] = (-1) * tc.log(tmp).sum(dim=1) / tmp.shape[1]
     return metric.min(dim=1)[0]
 
 
-def pauli_basis(which=None, device='cpu', if_list=False):
+def pauli_basis(which=None, device="cpu", if_list=False):
     basis = {
-        'x': tc.tensor([[1.0, 1.0], [1.0, -1.0]], device=device) / np.sqrt(2),
-        'y': tc.tensor([[1.0, 1.0j], [1.0, -1.0j]], device=device) / np.sqrt(2),
-        'z': tc.eye(2, dtype=tc.float64, device=device)
+        "x": tc.tensor([[1.0, 1.0], [1.0, -1.0]], device=device) / np.sqrt(2),
+        "y": tc.tensor([[1.0, 1.0j], [1.0, -1.0j]], device=device) / np.sqrt(2),
+        "z": tc.eye(2, dtype=tc.float64, device=device),
     }
     if which is None:
         if if_list:
-            return [basis['x'], basis['y'], basis['z']]
+            return [basis["x"], basis["y"], basis["z"]]
         else:
             return basis
     else:
         return basis[which]
 
 
-def pauli_operators(which=None, device='cpu', if_list=False):
+def pauli_operators(which=None, device="cpu", if_list=False):
     op = {
-        'x': tc.tensor([[0.0, 1.0], [1.0, 0.0]], device=device, dtype=tc.float64),
-        'y': tc.tensor([[0.0, -1.0j], [1.0j, 0.0]], device=device, dtype=tc.complex128),
-        'z': tc.tensor([[1.0, 0.0], [0.0, -1.0]], device=device, dtype=tc.float64),
-        'id': tc.eye(2).to(device=device, dtype=tc.float64)
+        "x": tc.tensor([[0.0, 1.0], [1.0, 0.0]], device=device, dtype=tc.float64),
+        "y": tc.tensor([[0.0, -1.0j], [1.0j, 0.0]], device=device, dtype=tc.complex128),
+        "z": tc.tensor([[1.0, 0.0], [0.0, -1.0]], device=device, dtype=tc.float64),
+        "id": tc.eye(2).to(device=device, dtype=tc.float64),
     }
     if which is None:
         if if_list:
-            return [op['id'], op['x'], op['y'], op['z']]
+            return [op["id"], op["x"], op["y"], op["z"]]
         else:
             return op
     else:
@@ -146,10 +146,7 @@ def pauli_operators(which=None, device='cpu', if_list=False):
 
 
 def phase_shift(theta):
-    return tc.tensor([
-        [1.0, 0.0],
-        [0.0, 1j*math.exp(theta)]
-    ]).to(dtype=tc.complex128)
+    return tc.tensor([[1.0, 0.0], [0.0, 1j * math.exp(theta)]]).to(dtype=tc.complex128)
 
 
 def rank1_product(vecs, c=1.0):
@@ -214,7 +211,7 @@ def rank1_np(x, v=None, it_time=10000, tol=1e-14):
             x1 = copy.deepcopy(x)
             for m in range(n):
                 x1 = np.tensordot(x1, v[m].conj(), [[0], [0]])
-            for m in range(len(v)-1, n, -1):
+            for m in range(len(v) - 1, n, -1):
                 x1 = np.tensordot(x1, v[m].conj(), [[-1], [0]])
             norm = np.linalg.norm(x1)
             v1 = x1 / norm
@@ -222,7 +219,7 @@ def rank1_np(x, v=None, it_time=10000, tol=1e-14):
             err_norm[n] = np.linalg.norm(norm - norm1)
             v[n] = v1
             norm1 = norm
-        if err.sum()/x.ndim < tol and err_norm.sum()/x.ndim < tol:
+        if err.sum() / x.ndim < tol and err_norm.sum() / x.ndim < tol:
             break
 
     return v, norm1
@@ -247,7 +244,7 @@ def rank1_tc(x, v=None, it_time=10000, tol=1e-14):
             x1 = x.clone()
             for m in range(n):
                 x1 = tc.tensordot(x1, v[m].conj(), [[0], [0]])
-            for m in range(len(v)-1, n, -1):
+            for m in range(len(v) - 1, n, -1):
                 x1 = tc.tensordot(x1, v[m].conj(), [[-1], [0]])
             norm = x1.norm()
             v1 = x1 / norm
@@ -255,7 +252,7 @@ def rank1_tc(x, v=None, it_time=10000, tol=1e-14):
             err_norm[n] = (norm - norm1).norm()
             v[n] = v1
             norm1 = norm
-        if err.sum()/x.ndimension() < tol and err_norm.sum()/x.ndimension() < tol:
+        if err.sum() / x.ndimension() < tol and err_norm.sum() / x.ndimension() < tol:
             break
     return v, norm1
 
@@ -285,8 +282,10 @@ def rotate_pauli(theta, direction):
 
 def series_sin_cos(x, coeff_sin, coeff_cos, k_step=0.02):
     y = tc.ones(x.numel(), device=x.device, dtype=x.dtype) * coeff_cos[0]
-    coeff_sin, coeff_cos = coeff_sin.to(device=x.device, dtype=x.dtype), \
-                           coeff_cos.to(device=x.device, dtype=x.dtype)
+    coeff_sin, coeff_cos = (
+        coeff_sin.to(device=x.device, dtype=x.dtype),
+        coeff_cos.to(device=x.device, dtype=x.dtype),
+    )
     for n in range(1, len(coeff_sin)):
         y = y + tc.sin(x * n * k_step) * coeff_sin[n]
     for n in range(1, len(coeff_cos)):
@@ -301,35 +300,35 @@ def sign_accuracy(pred, labels):
 
 def spin_operators(spin, is_torch=True):
     op = dict()
-    if spin.lower() == 'half':
+    if spin.lower() == "half":
         op_ = pauli_operators()
-        op['id'] = tc.eye(2)
-        op['sx'] = op_['x'] / 2
-        op['sy'] = op_['y'] / 2
-        op['sz'] = op_['z'] / 2
-        op['su'] = tc.zeros((2, 2))
-        op['sd'] = tc.zeros((2, 2))
-        op['su'][0, 1] = 1
-        op['sd'][1, 0] = 1
-    elif spin.lower() in ['1', 'one']:
-        op['id'] = tc.eye(3)
-        op['sx'] = tc.zeros((3, 3))
-        op['sy'] = tc.zeros((3, 3), dtype=tc.complex128)
-        op['sz'] = tc.zeros((3, 3))
-        op['sx'][0, 1] = 1
-        op['sx'][1, 0] = 1
-        op['sx'][1, 2] = 1
-        op['sx'][2, 1] = 1
-        op['sy'][0, 1] = -1j
-        op['sy'][1, 0] = 1j
-        op['sy'][1, 2] = -1j
-        op['sy'][2, 1] = 1j
-        op['sz'][0, 0] = 1
-        op['sz'][2, 2] = -1
-        op['sx'] /= 2 ** 0.5
-        op['sy'] /= 2 ** 0.5
-        op['su'] = tc.real(op['sx'] + 1j * op['sy'])
-        op['sd'] = tc.real(op['sx'] - 1j * op['sy'])
+        op["id"] = tc.eye(2)
+        op["sx"] = op_["x"] / 2
+        op["sy"] = op_["y"] / 2
+        op["sz"] = op_["z"] / 2
+        op["su"] = tc.zeros((2, 2))
+        op["sd"] = tc.zeros((2, 2))
+        op["su"][0, 1] = 1
+        op["sd"][1, 0] = 1
+    elif spin.lower() in ["1", "one"]:
+        op["id"] = tc.eye(3)
+        op["sx"] = tc.zeros((3, 3))
+        op["sy"] = tc.zeros((3, 3), dtype=tc.complex128)
+        op["sz"] = tc.zeros((3, 3))
+        op["sx"][0, 1] = 1
+        op["sx"][1, 0] = 1
+        op["sx"][1, 2] = 1
+        op["sx"][2, 1] = 1
+        op["sy"][0, 1] = -1j
+        op["sy"][1, 0] = 1j
+        op["sy"][1, 2] = -1j
+        op["sy"][2, 1] = 1j
+        op["sz"][0, 0] = 1
+        op["sz"][2, 2] = -1
+        op["sx"] /= 2**0.5
+        op["sy"] /= 2**0.5
+        op["su"] = tc.real(op["sx"] + 1j * op["sy"])
+        op["sd"] = tc.real(op["sx"] - 1j * op["sy"])
     if not is_torch:
         for k in op:
             op[k] = op[k].numpy()
@@ -344,8 +343,8 @@ def super_diagonal_tensor(dim, order):
     """
     delta = tc.zeros([dim] * order, dtype=tc.float64)
     for n in range(dim):
-        x = (''.join([str(n), ','] * order))
-        exec('delta[' + x[:-1] + '] = 1.0')
+        x = "".join([str(n), ","] * order)
+        exec("delta[" + x[:-1] + "] = 1.0")
     return delta
 
 
@@ -369,12 +368,12 @@ def ttd_np(x, chi=-1, svd=True):
     lm = list()
     if chi is None:
         chi = -1
-    for n in range(ndim-1):
+    for n in range(ndim - 1):
         if (chi < 0) and (not svd):  # No truncation
-            q, x = np.linalg.qr(x.reshape(dimL*dims[n], -1))
+            q, x = np.linalg.qr(x.reshape(dimL * dims[n], -1))
             dimL1 = x.shape[0]
         else:
-            q, s, v = np.linalg.svd(x.reshape(dimL*dims[n], -1))
+            q, s, v = np.linalg.svd(x.reshape(dimL * dims[n], -1))
             if chi > 0:
                 dc = min(chi, s.size)
             else:
@@ -407,12 +406,12 @@ def ttd_tc(x, chi=-1, svd=True):
     lm = list()
     if chi is None:
         chi = -1
-    for n in range(ndim-1):
+    for n in range(ndim - 1):
         if (chi < 0) and (not svd):  # No truncation
-            q, x = tc.linalg.qr(x.reshape(dimL*dims[n], -1))
+            q, x = tc.linalg.qr(x.reshape(dimL * dims[n], -1))
             dimL1 = x.shape[0]
         else:
-            q, s, v = tc.linalg.svd(x.reshape(dimL*dims[n], -1))
+            q, s, v = tc.linalg.svd(x.reshape(dimL * dims[n], -1))
             if chi > 0:
                 dc = min(chi, s.numel())
             else:
@@ -452,6 +451,7 @@ def tucker_product(tensor, mats, pos=None, dim=1, conj=False):
     :return G: 返回Tucker乘积的结果
     """
     from Library.BasicFun import inverse_permutation
+
     if pos is None:
         assert len(mats) == tensor.ndimension()
         pos = list(range(len(mats)))
@@ -475,6 +475,3 @@ def tucker_rank(x, eps=1e-14):
         r_ = (lm > eps).sum().item()
         r.append(r_)
     return r
-
-
-

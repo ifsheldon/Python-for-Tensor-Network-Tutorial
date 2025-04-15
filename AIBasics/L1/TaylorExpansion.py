@@ -6,10 +6,10 @@ x = 0.8
 order = 8  # 总阶数
 yn = 1  # 用于储存第n个求和项
 y = 1  # 用于储存求和计算结果（初始化为0阶项的值 ）
-for n in range(1, order+1):
+for n in range(1, order + 1):
     yn = yn * x / n
     y += yn
-    print('计算到第%i阶时，所得值为%.10g，误差为%.10g' % (n, y, abs(y-np.exp(x))))
+    print("计算到第%i阶时，所得值为%.10g，误差为%.10g" % (n, y, abs(y - np.exp(x))))
 
 
 """

@@ -3,34 +3,34 @@ import matplotlib.pyplot as plt
 
 
 # 全零张量的建立
-print('全零向量（1阶张量）')
+print("全零向量（1阶张量）")
 x = tc.zeros(3)
 print(x)
 print(x.shape)
 print(x.dtype, x.device)
 
-print('全零矩阵（2阶张量）')
+print("全零矩阵（2阶张量）")
 y = tc.zeros((3, 3))
 print(y)
 print(y.shape, y.numel(), y.ndimension())
 
-print('全零张量（4阶张量）')
+print("全零张量（4阶张量）")
 z = tc.zeros((2, 3, 2, 3))
 print(z.shape, z.numel(), z.ndimension())
 
-print('随机张量（标准高斯分布）')
+print("随机张量（标准高斯分布）")
 print(tc.randn(4))
-print('随机张量（0到1均匀分布）')
+print("随机张量（0到1均匀分布）")
 print(tc.rand(4))
-print('等差数列')
+print("等差数列")
 print(tc.arange(2, 10, 2))
 
-print('绘制x*sinx函数（0到10pi区间，500个数据点）')
+print("绘制x*sinx函数（0到10pi区间，500个数据点）")
 x = tc.arange(500) * tc.pi / 50
-y = x*tc.sin(x)
+y = x * tc.sin(x)
 plt.plot(x, y)
-plt.xlabel('x')
-plt.ylabel('x sin x')
+plt.xlabel("x")
+plt.ylabel("x sin x")
 plt.show()
 
 """

@@ -4,20 +4,20 @@ import math
 
 # 向量内积
 x = tc.tensor([1, 0, 0], dtype=tc.float64)
-y = tc.tensor([1/math.sqrt(2), 0, 1/math.sqrt(2)], dtype=tc.float64)
-print('两个向量的范数分别为：')
+y = tc.tensor([1 / math.sqrt(2), 0, 1 / math.sqrt(2)], dtype=tc.float64)
+print("两个向量的范数分别为：")
 print(x.norm(), y.norm())
-print('两个向量的内积为：')
+print("两个向量的内积为：")
 print(x.dot(y))
 print(x.matmul(y))
-print(tc.einsum('n,n', x, y))
+print(tc.einsum("n,n", x, y))
 
 # 矩阵乘向量
-a = 1/math.sqrt(2)
+a = 1 / math.sqrt(2)
 x = tc.tensor([a, a], dtype=tc.float64)
 mat = tc.tensor([[a, -a], [a, a]], dtype=tc.float64)
 print(mat.matmul(x))
-print(tc.einsum('ab,b->a', mat, x))
+print(tc.einsum("ab,b->a", mat, x))
 
 """
 练习：二维向量空间中，转角为a的旋转矩阵定义为

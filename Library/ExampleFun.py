@@ -1,7 +1,7 @@
 import torch as tc
 
 
-def eigs_power(mat, v0=None, which='la', tau=0.01, it_time=2000, tol=1e-14):
+def eigs_power(mat, v0=None, which="la", tau=0.01, it_time=2000, tol=1e-14):
     """
     :param mat: 输入矩阵（实对称阵）
     :param v0: 初始化向量，默认值为随机向量
@@ -21,11 +21,11 @@ def eigs_power(mat, v0=None, which='la', tau=0.01, it_time=2000, tol=1e-14):
 
     # 根据which给出投影矩阵
     tau = abs(tau)
-    if which.lower() == 'la':
+    if which.lower() == "la":
         rho = tc.matrix_exp(tau * mat)
-    elif which.lower() == 'sa':
+    elif which.lower() == "sa":
         rho = tc.matrix_exp(-tau * mat)
-    elif which.lower() == 'lm':
+    elif which.lower() == "lm":
         rho = tc.matrix_exp(tau * (tc.matrix_power(mat, 2)))
     else:  # which.lower() == 'sm'
         rho = tc.matrix_exp(-tau * (tc.matrix_power(mat, 2)))
@@ -46,11 +46,11 @@ def eigs_power(mat, v0=None, which='la', tau=0.01, it_time=2000, tol=1e-14):
     v1 = mat.matmul(v0)
     sign = tc.sign(v0.dot(v1))
 
-    if which.lower() == 'la':
-        return tc.log(lm)/tau, v1/v1.norm()
-    elif which.lower() == 'sa':
-        return -tc.log(lm)/tau, v1/v1.norm()
-    elif which.lower() == 'lm':
-        return sign * tc.sqrt(tc.log(lm)/tau), v1/v1.norm()
+    if which.lower() == "la":
+        return tc.log(lm) / tau, v1 / v1.norm()
+    elif which.lower() == "sa":
+        return -tc.log(lm) / tau, v1 / v1.norm()
+    elif which.lower() == "lm":
+        return sign * tc.sqrt(tc.log(lm) / tau), v1 / v1.norm()
     else:  # which.lower() == 'sm'
-        return sign * tc.sqrt(-tc.log(lm)/tau), v1/v1.norm()
+        return sign * tc.sqrt(-tc.log(lm) / tau), v1 / v1.norm()

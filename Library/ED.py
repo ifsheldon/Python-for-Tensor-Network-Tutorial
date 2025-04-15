@@ -31,10 +31,12 @@ def ED_ground_state(hamilt, pos, v0=None, k=1):
                 ind_new.remove(pos_now[nn])
             ind_new += pos_now
             ind_permute = list(np.argsort(ind_new))
-            _v = _v + np.tensordot(
-                v, hs[n], [ind_contract, list(range(len(
-                    pos_now)))]).transpose(ind_permute)
-        return _v.reshape(-1, )
+            _v = _v + np.tensordot(v, hs[n], [ind_contract, list(range(len(pos_now)))]).transpose(
+                ind_permute
+            )
+        return _v.reshape(
+            -1,
+        )
 
     # 自动获取总格点数
     n_site = 0
@@ -49,14 +51,15 @@ def ED_ground_state(hamilt, pos, v0=None, k=1):
     dim_tot = np.prod(dims)
     # 初始化向量
     if v0 is None:
-        v0 = eval('np.random.randn' + str(tuple(dims)))
+        v0 = eval("np.random.randn" + str(tuple(dims)))
         # v0 = np.random.randn(dims)
     else:
         v0 = v0.reshape(dims)
     v0 /= np.linalg.norm(v0)
     # 初始化指标顺序
     ind = list(range(n_site))
-    h_effect = LinearOp((dim_tot, dim_tot), lambda vg: one_map_tensordot(
-                        vg, hamilt, pos, dims, ind))
-    lm, v1 = eigsh(h_effect, k=k, which='SA', v0=v0)
+    h_effect = LinearOp(
+        (dim_tot, dim_tot), lambda vg: one_map_tensordot(vg, hamilt, pos, dims, ind)
+    )
+    lm, v1 = eigsh(h_effect, k=k, which="SA", v0=v0)
     return lm, v1

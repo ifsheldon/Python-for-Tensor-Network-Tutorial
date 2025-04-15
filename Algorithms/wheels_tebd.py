@@ -13,12 +13,12 @@ def check_hamilts_and_pos(hamilts, pos):
 
 
 def find_optimal_new_center(l0, r0, l1, r1):
-    l_min = min([abs(l0-l1), abs(l0-r1)])
-    r_min = min([abs(r0-l1), abs(r0-r1)])
+    l_min = min([abs(l0 - l1), abs(l0 - r1)])
+    r_min = min([abs(r0 - l1), abs(r0 - r1)])
     if l_min < r_min:
-        return 'rl'
+        return "rl"
     else:
-        return 'lr'  # r0离新区域近
+        return "lr"  # r0离新区域近
 
 
 def hamilts2gates(hamilts, tau):
@@ -29,8 +29,7 @@ def hamilts2gates(hamilts, tau):
         gates = tc.matrix_exp(-tau * hamilts.reshape(d ** (round(hamilts.ndimension() / 2)), -1))
     else:
         d = hamilts[0].shape[0]
-        gates = [tc.matrix_exp(-tau * g.reshape(d ** (
-            round(g.ndimension() / 2)), -1)) for g in hamilts]
+        gates = [
+            tc.matrix_exp(-tau * g.reshape(d ** (round(g.ndimension() / 2)), -1)) for g in hamilts
+        ]
     return gates
-
-

@@ -4,10 +4,7 @@ import matplotlib.pyplot as plt
 
 
 def rotate_2d(a):
-    return tc.tensor(
-        [[math.cos(a), -math.sin(a)],
-         [math.sin(a), math.cos(a)]],
-        dtype=tc.float64)
+    return tc.tensor([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]], dtype=tc.float64)
 
 
 def rotate_plot(vec, theta, n):
@@ -24,7 +21,7 @@ def rotate_plot(vec, theta, n):
 
 
 vec1 = tc.tensor([1, 0], dtype=tc.float64)
-rotate_plot(vec1, math.pi/20, 1000)
+rotate_plot(vec1, math.pi / 20, 1000)
 
 vec2 = tc.tensor([1, 0], dtype=tc.float64)
 rotate_plot(vec2, 0.1, 1000)

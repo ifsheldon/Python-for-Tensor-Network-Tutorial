@@ -40,10 +40,12 @@ def ED_ground_state(hamilt, pos, v0=None, k=1):
                 ind_new.remove(pos_now[nn])
             ind_new += pos_now
             ind_permute = list(np.argsort(ind_new))
-            _v = _v + np.tensordot(
-                v, hs[n], [ind_contract, list(range(len(
-                    pos_now)))]).transpose(ind_permute)
-        return _v.reshape(-1, )
+            _v = _v + np.tensordot(v, hs[n], [ind_contract, list(range(len(pos_now)))]).transpose(
+                ind_permute
+            )
+        return _v.reshape(
+            -1,
+        )
 
     # 自动获取总格点数
     n_site = 0
@@ -58,121 +60,123 @@ def ED_ground_state(hamilt, pos, v0=None, k=1):
     dim_tot = np.prod(dims)
     # 初始化向量
     if v0 is None:
-        v0 = eval('np.random.randn' + str(tuple(dims)))
+        v0 = eval("np.random.randn" + str(tuple(dims)))
         # v0 = np.random.randn(dims)
     else:
         v0 = v0.reshape(dims)
     v0 /= np.linalg.norm(v0)
     # 初始化指标顺序
     ind = list(range(n_site))
-    h_effect = LinearOp((dim_tot, dim_tot), lambda vg: one_map_tensordot(
-                        vg, hamilt, pos, dims, ind))
-    lm, v1 = eigsh(h_effect, k=k, which='SA', v0=v0)
+    h_effect = LinearOp(
+        (dim_tot, dim_tot), lambda vg: one_map_tensordot(vg, hamilt, pos, dims, ind)
+    )
+    lm, v1 = eigsh(h_effect, k=k, which="SA", v0=v0)
     return lm, v1
 
 
 def ED_spin_chain(v0=None, k=1, para=None):
     para0 = {
-        'length': 10,
-        'jx': 1,
-        'jy': 1,
-        'jz': 1,
-        'hx': 0,
-        'hy': 0,
-        'hz': 0,
-        'bound_cond': 'open'  # open or periodic
+        "length": 10,
+        "jx": 1,
+        "jy": 1,
+        "jz": 1,
+        "hx": 0,
+        "hy": 0,
+        "hz": 0,
+        "bound_cond": "open",  # open or periodic
     }
     if para is None:
         para = dict()
     para = dict(para0, **para)
     hamilts = hm.hamilts_spin_chain_NN(
-        para['jx'], para['jy'], para['jz'], para['hx'],
-        para['hy'], para['hz'], para['length'],
-        2, para['bound_cond'])
-    pos = hm.pos_chain_NN(
-        para['length'], para['bound_cond'])
+        para["jx"],
+        para["jy"],
+        para["jz"],
+        para["hx"],
+        para["hy"],
+        para["hz"],
+        para["length"],
+        2,
+        para["bound_cond"],
+    )
+    pos = hm.pos_chain_NN(para["length"], para["bound_cond"])
     lm, v = ED_ground_state(hamilts, pos, v0=v0, k=k)
     return lm, v, pos, para
 
 
 def ED_spin_lattice_NN_2D(v0=None, k=1, para=None):
     para0 = {
-        'lattice': 'triangular',  # triangular, square, kagome
-        'size': (3, 3),
-        'jx': 1,
-        'jy': 1,
-        'jz': 1,
-        'hx': 0,
-        'hy': 0,
-        'hz': 0,
-        'bound_cond': 'open'  # open or periodic
+        "lattice": "triangular",  # triangular, square, kagome
+        "size": (3, 3),
+        "jx": 1,
+        "jy": 1,
+        "jz": 1,
+        "hx": 0,
+        "hy": 0,
+        "hz": 0,
+        "bound_cond": "open",  # open or periodic
     }
     if para is None:
         para = dict()
     para = dict(para0, **para)
-    if para['lattice'] == 'square':
-        pos = hm.pos_square_NN(para['size'], para['bound_cond'])
-    elif para['lattice'] == 'triangular':
-        pos = hm.pos_triangle_OBC(para['size'])
-        para['bound_cond'] = 'open'
-    elif para['lattice'] == 'kagome':
-        pos = hm.pos_triangle_OBC(para['size'])
-        para['bound_cond'] = 'open'
+    if para["lattice"] == "square":
+        pos = hm.pos_square_NN(para["size"], para["bound_cond"])
+    elif para["lattice"] == "triangular":
+        pos = hm.pos_triangle_OBC(para["size"])
+        para["bound_cond"] = "open"
+    elif para["lattice"] == "kagome":
+        pos = hm.pos_triangle_OBC(para["size"])
+        para["bound_cond"] = "open"
     else:
         pos = None
-        os.error('Lattice unconsidered ... ')
-    para['length'] = np.max(np.array(pos))+1
+        os.error("Lattice unconsidered ... ")
+    para["length"] = np.max(np.array(pos)) + 1
 
     hamilts = hm.hamilts_kagome_NN_OBC(
-        para['jx'], para['jy'], para['jz'], para['hx'],
-        para['hy'], para['hz'], para['size'], 2)
-    pos = hm.pos_triangle_OBC(para['size'])
+        para["jx"], para["jy"], para["jz"], para["hx"], para["hy"], para["hz"], para["size"], 2
+    )
+    pos = hm.pos_triangle_OBC(para["size"])
     lm, v = ED_ground_state(hamilts, pos, v0=v0, k=k)
     return lm, v, pos, para
 
 
 def GS_ImagEvo_tensor(hamilt, pos, psi=None, para=None):
     from Algorithms import wheels_tebd as wh
+
     wh.check_hamilts_and_pos(hamilt, pos)
     para0 = {
-        'length': 4,  # 总自旋数
-        'tau': 0.1,  # 初始Trotter切片长度
-        'time_it': 1000,  # 演化次数
-        'time_ob': 20,  # 观测量计算间隔
-        'e0_eps': 1e-3,  # 基态能收敛判据
-        'tau_min': 1e-4,  # 终止循环tau判据
-        'device': None,
-        'dtype': tc.float64,
-        'print': True,  # 是否打印
-        'log_file': None  # 打印到文件
+        "length": 4,  # 总自旋数
+        "tau": 0.1,  # 初始Trotter切片长度
+        "time_it": 1000,  # 演化次数
+        "time_ob": 20,  # 观测量计算间隔
+        "e0_eps": 1e-3,  # 基态能收敛判据
+        "tau_min": 1e-4,  # 终止循环tau判据
+        "device": None,
+        "dtype": tc.float64,
+        "print": True,  # 是否打印
+        "log_file": None,  # 打印到文件
     }
     if para is None:
         para = dict()
     para = dict(para0, **para)
-    para['length'] = np.max(np.array(pos)) + 1
+    para["length"] = np.max(np.array(pos)) + 1
 
     if psi is None:
-        psi = TensorPureState(
-            nq=para['length'],
-            device=para['device'], dtype=para['dtype'])
+        psi = TensorPureState(nq=para["length"], device=para["device"], dtype=para["dtype"])
     else:
-        psi = psi.to(device=para['device'],
-                     dtype=para['dtype'])
+        psi = psi.to(device=para["device"], dtype=para["dtype"])
         psi = TensorPureState(tensor=psi)
 
     if type(hamilt) is tc.Tensor:
-        hamilt = hamilt.to(
-            device=para['device'], dtype=para['dtype'])
+        hamilt = hamilt.to(device=para["device"], dtype=para["dtype"])
     else:
-        hamilt = [ham.to(
-            device=para['device'], dtype=para['dtype'])
-            for ham in hamilt]
-    u = wh.hamilts2gates(hamilt, para['tau'])
+        hamilt = [ham.to(device=para["device"], dtype=para["dtype"]) for ham in hamilt]
+    u = wh.hamilts2gates(hamilt, para["tau"])
 
     e0_ = 1.0  # 暂存基态能
     beta = 0.0  # 记录倒温度
-    tau = para['tau']
-    for t in range(para['time_it']):
+    tau = para["tau"]
+    for t in range(para["time_it"]):
         for p in range(len(pos)):
             if type(hamilt) is tc.Tensor:
                 u1 = u.reshape(2, 2, 2, 2)
@@ -181,26 +185,29 @@ def GS_ImagEvo_tensor(hamilt, pos, psi=None, para=None):
             psi.act_single_gate(u1, pos=pos[p])
         psi.normalize()
         beta += tau
-        if t % para['time_ob'] == 0:
+        if t % para["time_ob"] == 0:
             e0 = 0.0
             for p in pos:
-                e0 += psi.observation(
-                    hamilt.reshape(2, 2, 2, 2), p)
-                fprint('beta = %g, Eg = %g' % (beta, e0),
-                       print_screen=para['print'],
-                       file=para['log_file'])
-            if abs(e0 - e0_) < para['e0_eps'] * tau:
+                e0 += psi.observation(hamilt.reshape(2, 2, 2, 2), p)
+                fprint(
+                    "beta = %g, Eg = %g" % (beta, e0),
+                    print_screen=para["print"],
+                    file=para["log_file"],
+                )
+            if abs(e0 - e0_) < para["e0_eps"] * tau:
                 tau *= 0.5
                 u = wh.hamilts2gates(hamilt, tau)
-                fprint('由于演化收敛，tau减小为%g' % tau,
-                       print_screen=para['print'],
-                       file=para['log_file'])
-            if tau < para['tau_min']:
-                fprint('tau = %g < %g, 演化终止...' % (
-                    tau, para['tau_min']),
-                       print_screen=para['print'],
-                       file=para['log_file'])
+                fprint(
+                    "由于演化收敛，tau减小为%g" % tau,
+                    print_screen=para["print"],
+                    file=para["log_file"],
+                )
+            if tau < para["tau_min"]:
+                fprint(
+                    "tau = %g < %g, 演化终止..." % (tau, para["tau_min"]),
+                    print_screen=para["print"],
+                    file=para["log_file"],
+                )
                 break
             e0_ = e0
     return e0_, psi.tensor, para
-

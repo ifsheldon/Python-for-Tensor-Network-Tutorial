@@ -16,8 +16,7 @@ def qubit_state_sampling(state, num_sample=1000, counter=True):
 
     p = state * state.conj()
     population = binary_strings(state.numel())
-    y = random.choices(
-        population, weights=p.flatten(), k=num_sample)
+    y = random.choices(population, weights=p.flatten(), k=num_sample)
     if counter:
         y = Counter(y)
     return y
@@ -25,10 +24,8 @@ def qubit_state_sampling(state, num_sample=1000, counter=True):
 
 psi = tc.tensor([1.0, 0.0], dtype=tc.float64)
 psi1 = hadamard().matmul(psi)
-print('初态 = ', list(psi.numpy()))
-print('末态 = ', list(psi1.numpy()))
+print("初态 = ", list(psi.numpy()))
+print("末态 = ", list(psi1.numpy()))
 
 samples = qubit_state_sampling(psi1, num_sample=5000)
-print('末态上的采样结果：\n', samples)
-
-
+print("末态上的采样结果：\n", samples)
