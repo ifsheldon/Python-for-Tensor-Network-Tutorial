@@ -86,7 +86,7 @@ def feature_map(samples, which="cossin", para=None, norm_p=2):
                 * tc.cos(samples * para["theta"] * np.pi / 2) ** (para["d"] - dd)
                 * tc.sin(samples * para["theta"] * np.pi / 2) ** (dd - 1)
             )
-        img1 = tc.cat(img1, dim=1)
+        img1 = tc.cat(img1, dim=1)  # (sample_num, d)
         if norm_p == 1:
             img1 = img1**2
         return img1

@@ -338,18 +338,30 @@ class QRNN_LatentGates(ADQC_basic):
 
     def forward(self, vecs, psi=None, eps=1e-12):
         # vecs的形状为(样本数，向量维数，向量个数)
+        # (batch, feature_dim, sample_length)
+        batch_size = vecs.shape[0]
         if psi is None:
             psi = tc.zeros(2**self.num_a, device=self.device, dtype=self.dtype)
             psi[0] = 1.0
-            psi = psi.repeat(vecs.shape[0], 1)
+            psi = psi.repeat(batch_size, 1)  # (batch, 2**num_aux_qubits)
         self.renew_gates()
         norm = None
+        feature_dim = vecs.shape[1]
         for n in range(vecs.shape[2]):
-            psi = tc.einsum("na,nb->nab", psi, vecs[:, :, n])
-            psi = psi.reshape([psi.shape[0]] + [2] * self.num_a + [vecs.shape[1]])
+            psi = tc.einsum(
+                "na,nb->nab", psi, vecs[:, :, n]
+            )  # (batch, 2**num_aux_qubits, feature_dim), feature_dim is 2
+            psi = psi.reshape(
+                [batch_size] + [2] * self.num_a + [feature_dim]
+            )  # (batch, 2, 2, 2, ..., 2, feature_dim)
             for m in range(len(self.layers)):
                 psi = self.act_nth_gate_multi_states(psi, m)
-            psi = psi.reshape(-1, vecs.shape[1])[:, 0].reshape(vecs.shape[0], -1)
+
+            psi = psi.reshape(-1, feature_dim)  # (batch * 2**num_aux_qubits, feature_dim)
+            psi = psi[
+                :, 0
+            ]  # (batch * 2**num_aux_qubits), take the 0-state of the only feature qubit
+            psi = psi.reshape(batch_size, -1)  # (batch, 2**num_aux_qubits),
             norm = tc.einsum("na,na->digit", psi, psi.conj())
             psi = tc.einsum("na,digit->na", psi, 1 / (tc.sqrt(norm + eps)))
         return norm
