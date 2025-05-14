@@ -878,9 +878,29 @@ class generative_MPS(MPS_basic):
         self.vecsR = tc.ones((num_f, chi, len(self.tensors)), device=self.device, dtype=self.dtype)
         center = max(0, self.center)
         for n in range(center):
-            self.update_vecsL_n(n)
+            s = self.tensors[n].shape
+            left_chi, _physical_dim, right_chi = s
+            current_vecsL = self.vecsL[:, :left_chi, n]
+            sample_for_n = self.samples_v[:, :, n]
+            current_tensor = self.tensors[n]
+            next_vecsL = tc.einsum("na,nb,abc->nc", current_vecsL, sample_for_n, current_tensor)
+            self.norms[:, n] = next_vecsL.norm(dim=1)
+            self.vecsL[:, :right_chi, n + 1] = tc.einsum(
+                "na,n->na", next_vecsL, 1 / (self.norms[:, n] + self.eps)
+            )
         for n in range(len(self.tensors) - 1, center, -1):
-            self.update_vecsR_n(n)
+            s = self.tensors[n].shape
+            left_chi, _physical_dim, right_chi = s
+            self.vecsR[:, :left_chi, n - 1] = tc.einsum(
+                "nc,nb,abc->na",
+                self.vecsR[:, :right_chi, n],
+                self.samples_v[:, :, n],
+                self.tensors[n],
+            )
+            self.norms[:, n] = self.vecsR[:, :left_chi, n - 1].norm(dim=1)
+            self.vecsR[:, :left_chi, n - 1] = tc.einsum(
+                "na,n->na", self.vecsR[:, :left_chi, n - 1], 1 / (self.norms[:, n] + self.eps)
+            )
         self.update_norms_center(center)
 
     def input_samples_v(self, samples_v):
