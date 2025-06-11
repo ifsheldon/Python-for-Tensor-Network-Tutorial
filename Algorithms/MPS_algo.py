@@ -499,7 +499,7 @@ def generate_sample_by_gmps(mps, sample=None, order_g=None, paraG=None):
             mps.para["feature_map"],
             para={"d": mps.para["d"], "theta": mps.para["theta"]},
         )
-        mps.project_multi_qubits(order_p, sample_v[0])
+        mps.project_multi_qubits(order_p, sample_v[0])  # sample_v (channel, feature_num)
 
     order_gn = np.argsort(np.argsort(order_g))
     if (paraG["way"] in ["single", "inverse"]) or (paraG["num_s"] == 1):
