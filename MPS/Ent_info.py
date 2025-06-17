@@ -29,7 +29,6 @@ lm = tc.linalg.eigvalsh(rho)
 
 # The entanglement entropy is the von Neumann entropy of the reduced state.
 # Formula: S = -Tr(ρ₀ log(ρ₀)) = -Σᵢ λᵢ log(λᵢ), where λᵢ are the eigenvalues.
-# We filter out eigenvalues that are zero or very close to it to avoid log(0) = -inf.
 ent = -lm.inner(tc.log(lm))
 
 print("Implement random measurement on qubit-0...")
@@ -51,7 +50,7 @@ for t in range(mesure_time):
     # `p` will store the probabilities [p₀, p₁] of measuring the qubit in states
     # |φ₀⟩ and |φ₁⟩ respectively.
     # The vector `proj[:, s]` corresponds to the measurement basis vector `|φₛ⟩`.
-    # The line below calculates pₛ = ⟨φₛ|ρ₀|φₛ⟩. This is the probability of the
+    # The line below calculates pₛ = ⟨φₛ|ρ₀|φₛ⟩ instead of ⟨ψ|M|ψ⟩. This is the probability of the
     # state `ρ₀` collapsing to the measurement state `|φₛ⟩`.
     # This is mathematically equivalent to, but computationally more direct than,
     # first building the measurement operator Mₛ = |φₛ⟩⟨φₛ| and then computing Tr(ρ₀ Mₛ).
