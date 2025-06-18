@@ -806,7 +806,9 @@ class generative_MPS(MPS_basic):
 
     def evaluate_nll_selected_features(self, samples_v, pos, average=False):
         # 注：samples_v包含所有特征，不是选出来的特征
-        assert samples_v.shape[2] == len(self.tensors)
+        assert samples_v.shape[2] == len(
+            self.tensors
+        )  # (batch, feature dim, mps length/feature num)
         assert type(pos) in [list, tuple, tc.Tensor]
         vl = tc.ones((samples_v.shape[0], 1, 1), device=self.device, dtype=self.dtype)
         vr = tc.ones((samples_v.shape[0], 1, 1), device=self.device, dtype=self.dtype)
