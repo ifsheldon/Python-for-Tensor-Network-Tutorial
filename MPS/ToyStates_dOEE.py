@@ -7,7 +7,7 @@ from Library.QuantumState import TensorPureState
 
 def dOEE_analyze(samples, img_n=0):
     samples = tc.tensor(samples).to(dtype=tc.float64)
-    vecs = feature_map(samples)
+    vecs = feature_map(samples)  # (num_samples, 2, num_features)
     psi = vecs2product_state(vecs)
     print("psi形状为：直积态个数 * (直积态维数) = ", psi.shape)
 
