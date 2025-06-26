@@ -695,7 +695,7 @@ def tebd_spin_chain(mps_tensors=None, para=None, paraMPS=None, output=None):
     paraMPS = dict(paraMPS0, **paraMPS)
     if mps_tensors is not None:
         paraMPS["length"] = len(mps_tensors)
-    hamilts = hm.hamilts_spin_chain_NN(
+    hamilts = hm.spin_chain_NN_hamilts(
         para["jxy"],
         para["jxy"],
         para["jz"],

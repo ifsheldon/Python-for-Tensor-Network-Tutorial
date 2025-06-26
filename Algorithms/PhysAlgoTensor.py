@@ -88,7 +88,7 @@ def ED_spin_chain(v0=None, k=1, para=None):
     if para is None:
         para = dict()
     para = dict(para0, **para)
-    hamilts = hm.hamilts_spin_chain_NN(
+    hamilts = hm.spin_chain_NN_hamilts(
         para["jx"],
         para["jy"],
         para["jz"],
