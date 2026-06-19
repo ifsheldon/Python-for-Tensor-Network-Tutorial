@@ -501,7 +501,7 @@ class MPS_basic:
         v = tc.einsum("apb,aqd->pqbd", self.tensors[pos[0]].conj(), self.tensors[pos[0]])
         for n in range(pos[0] + 1, pos[1], 1):
             v = tc.einsum("pqac,asb,csd->pqbd", v, self.tensors[n].conj(), self.tensors[n])
-        rho = tc.einsum("pqac,asb,ckb->psqk", v, self.tensors[pos[1]].conj(), self.tensors[pos[1]])
+        rho = tc.einsum("pqac,asb,ckb->qkps", v, self.tensors[pos[1]].conj(), self.tensors[pos[1]])
         s = rho.shape
         rho = rho.reshape(s[0] * s[1], -1)
         return rho
